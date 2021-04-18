@@ -1,4 +1,4 @@
-from bson import Decimal128, ObjectId
+from bson import ObjectId
 from repository import Repository
 from typing import List
 from app.cryptos.dto import CreateCryptoDTO, Crypto, UpdateCryptoDTO
@@ -17,20 +17,6 @@ def transform_result(result):
         "last_price_thb_at": result["last_price_thb_at"],
 
     }
-
-
-def transform_input_dict(input: dict):
-    print(input)
-    for key, value in input.items():
-        print("key: " + key)
-        print("value: " + value if value is str else str(value))
-        print(type(value))
-
-        if type(value) == "<class 'decimal.Decimal'>":
-            print("is decimal")
-            input[key] = Decimal128(value)
-
-    return input
 
 
 class CryptosRepositoryMongo(Repository):
