@@ -1,54 +1,11 @@
 from typing import Optional
-
 from fastapi import FastAPI
-
-from pydantic import BaseModel, Field, FilePath, condecimal
+from pydantic import BaseModel
+from app.cryptos.router import router
 
 app = FastAPI()
 
-
-class Cryptos(BaseModel):
-    name: str
-    logo: FilePath
-    current_price_usd: condecimal(ge=0, decimal_places=9)
-    last_price_usd_at: condecimal(ge=0, decimal_places=9)
-    current_price_thb: condecimal(ge=0, decimal_places=9)
-    last_price_thb_at: condecimal(ge=0, decimal_places=9)
-
-
-@app.get("/cryptos/info")
-def read_cryptos_info():
-    return {
-        "code": "0",
-        "data": {
-            "total_cryptos": 2,
-            "cryptos": [
-                {
-                    "crypto_id": 1112,
-                    "crypto_name": "BITCOIN",
-                    "crypto_logo": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F9a%2FBTC_Logo.svg%2F2000px-BTC_Logo.svg.png&imgrefurl=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ABTC_Logo.svg&tbnid=BR6Eemum0OA7IM&vet=12ahUKEwip67r9hIXwAhUTgGMGHazaDnwQMygAegUIARDYAQ..i&docid=awTjjYqsBYwGqM&w=2000&h=2000&q=btc%20logo&ved=2ahUKEwip67r9hIXwAhUTgGMGHazaDnwQMygAegUIARDYAQ",
-                    "crypto_price": {
-                        "current_price_usd": "2123.123456789",
-                        "last_price_usd_at": "2014-10-15 18:36:05 +0700",
-                        "current_price_thb": "2123.123456789",
-                        "last_price_thb_at": "2014-10-15 18:36:05 +0700",
-                    }
-                },
-                {
-                    "crypto_id": 1113,
-                    "crypto_name": "DODGE COIN",
-                    "crypto_logo": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fd%2Fd0%2FDogecoin_Logo.png&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FDogecoin&tbnid=D8T9XKPikDLASM&vet=12ahUKEwjEhISbhYXwAhVJsWMGHT8XAmYQMygBegUIARDSAQ..i&docid=ZssAvoh1tqNZoM&w=256&h=256&itg=1&q=doge%20logo&ved=2ahUKEwjEhISbhYXwAhVJsWMGHT8XAmYQMygBegUIARDSAQ",
-                    "crypto_price": {
-                        "current_price_usd": "2123.123456789",
-                        "last_price_usd_at": "2014-10-15 18:36:05 +0700",
-                        "current_price_thb": "2123.123456789",
-                        "last_price_thb_at": "2014-10-15 18:36:05 +0700",
-                    }
-                }
-            ]
-        },
-        "request_id": "0ba2887315178178017221014"
-    }
+app.include_router(router, prefix="/cryptos", tags=["Cryptos"])
 
 
 @app.get("/orders")
@@ -63,8 +20,8 @@ def read_orders():
                     "transaction_number": "gus-1231l1l2n3",
                     "transaction_status": "MATCHED",  # MATCHED, CANCELED, PENDING
                     "coin_info": {
-                        "crypto_id": 123,
-                        "crypto_name": "BTC",
+                        "id": 123,
+                        "name": "BTC",
                         "qty": "12.123456789",
                         "current_price_usd": "2123.123456789",
                         "total_amount_usd": "1231123.123123123",
@@ -81,8 +38,8 @@ def read_orders():
                     "transaction_number": "gus-1231l1l2n3",
                     "transaction_status": "MATCHED",  # MATCHED, CANCELED, PENDING
                     "coin_info": {
-                        "crypto_id": 122,
-                        "crypto_name": "BTC",
+                        "id": 122,
+                        "name": "BTC",
                         "qty": "12.123456789",
                         "current_price_usd": "2123.123456789",
                         "total_amount_usd": "1231123.123123123",
