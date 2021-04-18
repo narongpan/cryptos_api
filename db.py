@@ -1,9 +1,17 @@
+import os
+from dotenv import load_dotenv
 from decimal import Decimal
 from bson.codec_options import CodecOptions, TypeCodec, TypeRegistry
 from bson.decimal128 import Decimal128
 import motor.motor_asyncio
 
-MONGO_URL = "mongodb://localhost:27017"
+load_dotenv()
+
+MONGO_URL = os.getenv("MONGO_URL")
+
+if MONGO_URL is None:
+    raise Exception("MongoDB URL could not be found from  the env var.")
+
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client.bitgus
 
