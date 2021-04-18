@@ -1,4 +1,4 @@
-from database.sql.schemas import CoinCreate, CoinUpdate
+from .dtos import CoinCreate, CoinUpdate
 from dotenv import load_dotenv
 import os
 from fastapi import APIRouter
@@ -6,7 +6,7 @@ from .cryptos_repository_mongo import CryptosRepositoryMongo
 from .cryptos_repository_postgres import CryptosRepositoryPostgres
 from .cryptos_service import CryptosService
 from helpers import make_response
-from db import db, codec_options
+from database.nosql import mongo
 from database.sql import postgres
 
 load_dotenv()
@@ -18,7 +18,7 @@ print("db_provider: " + db_provider)
 
 if db_provider == "mongo":
     cryptos_repo = CryptosRepositoryMongo(
-        db.get_collection('cryptos', codec_options=codec_options)
+        mongo.db.get_collection('cryptos', codec_options=mongo.codec_options)
     )
 elif db_provider == "postgres":
     cryptos_repo = CryptosRepositoryPostgres(postgres.SessionLocal())

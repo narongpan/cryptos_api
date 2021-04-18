@@ -1,7 +1,7 @@
 from bson import ObjectId
 from repository import Repository
 from typing import List
-from app.cryptos.dto import CreateCryptoDTO, Crypto, UpdateCryptoDTO
+from .dtos import Coin, CoinUpdate, CoinCreate
 
 
 def transform_result(result):
@@ -23,7 +23,7 @@ class CryptosRepositoryMongo(Repository):
     def __init__(self, cryptosCollection) -> None:
         self.collection = cryptosCollection
 
-    async def find_all(self) -> List[Crypto]:
+    async def find_all(self) -> List[Coin]:
         print("CryptosRepositoryMongo.find_all()")
         cryptos = []
 
@@ -32,12 +32,12 @@ class CryptosRepositoryMongo(Repository):
 
         return cryptos
 
-    async def find_one(self, id: str) -> Crypto:
+    async def find_one(self, id: str) -> Coin:
         found = await self.collection.find_one({"_id": ObjectId(id)})
 
         return transform_result(found)
 
-    async def create(self, create_dto: CreateCryptoDTO):
+    async def create(self, create_dto: CoinCreate):
         print("CryptosRepositoryMongo.create()")
         created = await self.collection.insert_one(create_dto.dict())
         print("created:")
@@ -48,7 +48,7 @@ class CryptosRepositoryMongo(Repository):
 
         return transform_result(found)
 
-    async def update(self, id: str, update_dto: UpdateCryptoDTO) -> Crypto:
+    async def update(self, id: str, update_dto: CoinUpdate) -> Coin:
         update_dict = update_dto.dict()
 
         if len(update_dict) < 1:
