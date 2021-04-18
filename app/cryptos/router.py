@@ -1,13 +1,31 @@
-from app.cryptos.cryptos_repository_mongo import CryptosRepositoryMongo
+from database.sql.schemas import CoinCreate, CoinUpdate
+from dotenv import load_dotenv
+import os
 from fastapi import APIRouter
-from app.cryptos.cryptos_service import CryptosService
-from app.cryptos.dto import CreateCryptoDTO, UpdateCryptoDTO
+from .cryptos_repository_mongo import CryptosRepositoryMongo
+from .cryptos_repository_postgres import CryptosRepositoryPostgres
+from .cryptos_service import CryptosService
 from helpers import make_response
 from db import db, codec_options
+from database.sql import postgres
 
-cryptos_repository_mongo = CryptosRepositoryMongo(
-    db.get_collection('cryptos', codec_options=codec_options))
-cryptos_service = CryptosService(cryptos_repository_mongo)
+load_dotenv()
+db_provider = os.getenv("DB_PROVIDER")
+cryptos_repo = None
+
+print("db_provider: " + db_provider)
+
+
+if db_provider == "mongo":
+    cryptos_repo = CryptosRepositoryMongo(
+        db.get_collection('cryptos', codec_options=codec_options)
+    )
+elif db_provider == "postgres":
+    cryptos_repo = CryptosRepositoryPostgres(postgres.SessionLocal())
+else:
+    raise Exception("Database provider could not be found from the env var.")
+
+cryptos_service = CryptosService(cryptos_repo)
 router = APIRouter()
 
 
@@ -23,12 +41,12 @@ async def get_crypto(crypto_id: str):
 
 
 @router.post("/", status_code=201)
-async def create_cryptos_info(crypto_info: CreateCryptoDTO):
+async def create_cryptos_info(crypto_info: CoinCreate):
     return make_response("crypto", await cryptos_service.create(crypto_info))
 
 
 @router.patch("/{crypto_id}")
-async def update_cryptos_info(crypto_id: str, crypto_info: UpdateCryptoDTO):
+async def update_cryptos_info(crypto_id: str, crypto_info: CoinUpdate):
     return make_response("crypto", await cryptos_service.update(crypto_id, crypto_info))
 
 
@@ -36,7 +54,7 @@ async def update_cryptos_info(crypto_id: str, crypto_info: UpdateCryptoDTO):
 async def delete_crypto(crypto_id: str):
     result = await cryptos_service.delete(crypto_id)
 
-    if result is False:
+    if result == 0:
         return make_response("crypto", None)
 
     return make_response("crypto", crypto_id)

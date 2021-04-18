@@ -2,6 +2,9 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 from app.cryptos.router import router
+from database.sql import models, postgres
+
+models.Base.metadata.create_all(bind=postgres.engine)
 
 app = FastAPI()
 
@@ -100,7 +103,7 @@ def read_wallet_transactions():
                     "from_account": "123-1231-23123-",
                     "from_bank": "KASIKORN",
                 },
-                "withdraw_info": null,
+                "withdraw_info": None,
                 # "to_account": "",
                 # "to_bank": "",
                 "transaction_status": "COMPLETED",  # CANCELED

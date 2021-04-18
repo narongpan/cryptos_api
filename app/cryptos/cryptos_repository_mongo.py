@@ -63,10 +63,10 @@ class CryptosRepositoryMongo(Repository):
 
         return None
 
-    async def delete(self, id: str):
+    async def delete(self, id: str) -> int:
         delete_result = await self.collection.delete_one({"_id": ObjectId(id)})
 
         if delete_result.deleted_count == 1:
-            return id
+            return 1
 
-        return False
+        return 0
